@@ -47,6 +47,7 @@ If you find MINNs useful in your research, please consider citing:
 | tiger      | 0.0005  |  0.005  |  0.9     |
 | elephat    | 0.0001  |  0.005  |  0.9     |
 | 20 newsgroups |  0.001 |  0.001 | 0.9     |
+
 In addition, the number of max epoch is set to 50.
 
 ### Usage
