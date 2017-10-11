@@ -8,7 +8,8 @@ import argparse
 from keras.models import Model
 from keras.optimizers import SGD
 from keras.regularizers import l2
-from keras.layers import Input, Dense, Layer, Dropout, merge
+from keras.layers import Input, Dense, Layer, Dropout
+from keras.layers.merge import average
 
 from mil_nets.dataset import load_dataset
 from mil_nets.layer import Feature_pooling
@@ -127,24 +128,24 @@ def MI_Net_with_DS(dataset):
     data_input = Input(shape=(dimension,), dtype='float32', name='input')
 
     # fully-connected
-    fc1 = Dense(256, activation='relu', W_regularizer=l2(args.weight_decay))(data_input)
-    fc2 = Dense(128, activation='relu', W_regularizer=l2(args.weight_decay))(fc1)
-    fc3 = Dense(64, activation='relu', W_regularizer=l2(args.weight_decay))(fc2)
+    fc1 = Dense(256, activation='relu', kernel_regularizer=l2(args.weight_decay))(data_input)
+    fc2 = Dense(128, activation='relu', kernel_regularizer=l2(args.weight_decay))(fc1)
+    fc3 = Dense(64, activation='relu', kernel_regularizer=l2(args.weight_decay))(fc2)
 
     # dropout
-    dropout1 = Dropout(p=0.5)(fc1)
-    dropout2 = Dropout(p=0.5)(fc2)
-    dropout3 = Dropout(p=0.5)(fc3)
+    dropout1 = Dropout(rate=0.5)(fc1)
+    dropout2 = Dropout(rate=0.5)(fc2)
+    dropout3 = Dropout(rate=0.5)(fc3)
 
     # features pooling
-    fp1 = Feature_pooling(output_dim=1, W_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='fp1')(dropout1)
-    fp2 = Feature_pooling(output_dim=1, W_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='fp2')(dropout2)
-    fp3 = Feature_pooling(output_dim=1, W_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='fp3')(dropout3)
+    fp1 = Feature_pooling(output_dim=1, kernel_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='fp1')(dropout1)
+    fp2 = Feature_pooling(output_dim=1, kernel_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='fp2')(dropout2)
+    fp3 = Feature_pooling(output_dim=1, kernel_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='fp3')(dropout3)
 
     # score average
-    mg_ave = merge([fp1,fp2,fp3], mode='ave', name='ave')
+    mg_ave =average([fp1,fp2,fp3], name='ave')
 
-    model = Model(input=[data_input], output=[fp1, fp2, fp3, mg_ave])
+    model = Model(inputs=[data_input], outputs=[fp1, fp2, fp3, mg_ave])
     sgd = SGD(lr=args.init_lr, decay=1e-4, momentum=args.momentum, nesterov=True)
     model.compile(loss={'fp1':bag_loss, 'fp2':bag_loss, 'fp3':bag_loss, 'ave':bag_loss}, loss_weights={'fp1':weight[0], 'fp2':weight[1], 'fp3':weight[2], 'ave':weight[3]}, optimizer=sgd, metrics=[bag_accuracy])
 
@@ -175,6 +176,6 @@ if __name__ == '__main__':
         dataset = load_dataset(args.dataset, n_folds)
         for ifold in range(n_folds):
             print 'run=', irun, '  fold=', ifold
-            acc[irun][ifold] = MI_Net_with_DS(dataset[irun])
+            acc[irun][ifold] = MI_Net_with_DS(dataset[ifold])
     print 'MI-Net with DS mean accuracy = ', np.mean(acc)
     print 'std = ', np.std(acc)

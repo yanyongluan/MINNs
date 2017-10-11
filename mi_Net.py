@@ -125,17 +125,17 @@ def mi_Net(dataset):
     data_input = Input(shape=(dimension,), dtype='float32', name='input')
 
     # fully-connected
-    fc1 = Dense(256, activation='relu', W_regularizer=l2(args.weight_decay))(data_input)
-    fc2 = Dense(128, activation='relu', W_regularizer=l2(args.weight_decay))(fc1)
-    fc3 = Dense(64, activation='relu', W_regularizer=l2(args.weight_decay))(fc2)
+    fc1 = Dense(256, activation='relu', kernel_regularizer=l2(args.weight_decay))(data_input)
+    fc2 = Dense(128, activation='relu', kernel_regularizer=l2(args.weight_decay))(fc1)
+    fc3 = Dense(64, activation='relu', kernel_regularizer=l2(args.weight_decay))(fc2)
 
     # dropout
-    dropout = Dropout(0.5)(fc3)
+    dropout = Dropout(rate=0.5)(fc3)
 
     # score pooling
-    sp = Score_pooling(output_dim=1, W_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='sp')(dropout)
+    sp = Score_pooling(output_dim=1, kernel_regularizer=l2(args.weight_decay), pooling_mode=args.pooling_mode, name='sp')(dropout)
 
-    model = Model(input=[data_input], output=[sp])
+    model = Model(inputs=[data_input], outputs=[sp])
     sgd = SGD(lr=args.init_lr, decay=1e-4, momentum=args.momentum, nesterov=True)
     model.compile(loss=bag_loss, optimizer=sgd, metrics=[bag_accuracy])
 
@@ -167,6 +167,6 @@ if __name__ == '__main__':
         dataset = load_dataset(args.dataset, n_folds)
         for ifold in range(n_folds):
             print 'run=', irun, '  fold=', ifold
-            acc[irun][ifold] = mi_Net(dataset[irun])
+            acc[irun][ifold] = mi_Net(dataset[ifold])
     print 'mi-net mean accuracy = ', np.mean(acc)
     print 'std = ', np.std(acc)

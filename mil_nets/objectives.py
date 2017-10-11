@@ -6,7 +6,7 @@ def bag_loss(y_true, y_pred):
     ---------------------
     y_true : Tensor (N x 1)
         GroundTruth of bag.
-    y_pred : Tensor (N X 1)
+    y_pred : Tensor (1 X 1)
         Prediction score of bag.
     Return
     ---------------------
@@ -15,5 +15,5 @@ def bag_loss(y_true, y_pred):
     """
     y_true = K.mean(y_true, axis=0, keepdims=False)
     y_pred = K.mean(y_pred, axis=0, keepdims=False)
-    loss = K.mean(K.binary_crossentropy(y_pred, y_true), axis=-1)
+    loss = K.mean(K.binary_crossentropy(y_true, y_pred), axis=-1)
     return loss

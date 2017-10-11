@@ -126,14 +126,14 @@ def MI_Net_with_RC(dataset):
     data_input = Input(shape=(dimension,), dtype='float32', name='input')
 
     # fully-connected
-    fc1 = Dense(128, activation='relu', W_regularizer=l2(args.weight_decay))(data_input)
-    fc2 = Dense(128, activation='relu', W_regularizer=l2(args.weight_decay))(fc1)
-    fc3 = Dense(128, activation='relu', W_regularizer=l2(args.weight_decay))(fc2)
+    fc1 = Dense(128, activation='relu', kernel_regularizer=l2(args.weight_decay))(data_input)
+    fc2 = Dense(128, activation='relu', kernel_regularizer=l2(args.weight_decay))(fc1)
+    fc3 = Dense(128, activation='relu', kernel_regularizer=l2(args.weight_decay))(fc2)
 
     # dropout
-    dropout1 = Dropout(p=0.5)(fc1)
-    dropout2 = Dropout(p=0.5)(fc2)
-    dropout3 = Dropout(p=0.5)(fc3)
+    dropout1 = Dropout(rate=0.5)(fc1)
+    dropout2 = Dropout(rate=0.5)(fc2)
+    dropout3 = Dropout(rate=0.5)(fc3)
 
     # residual connection
     rc1 = RC_block(pooling_mode=args.pooling_mode, name='rc1')(dropout1)
@@ -144,7 +144,7 @@ def MI_Net_with_RC(dataset):
     mg_sum = merge([rc1, rc2, rc3], mode='sum')
     out = Dense(1, activation='sigmoid', W_regularizer=l2(args.weight_decay))(mg_sum)
 
-    model = Model(input=[data_input], output=[out])
+    model = Model(inputs=[data_input], outputs=[out])
     sgd = SGD(lr=args.init_lr, decay=1e-4, momentum=args.momentum, nesterov=True)
     model.compile(loss=bag_loss, optimizer=sgd, metrics=[bag_accuracy])
 
@@ -176,6 +176,6 @@ if __name__ == '__main__':
         dataset = load_dataset(args.dataset, n_folds)
         for ifold in range(n_folds):
             print 'run=', irun, '  fold=', ifold
-            acc[irun][ifold] = MI_Net_with_RC(dataset[irun])
+            acc[irun][ifold] = MI_Net_with_RC(dataset[ifold])
     print 'MI-Net with RC mean accuracy = ', np.mean(acc)
     print 'std = ', np.std(acc)
