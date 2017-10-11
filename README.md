@@ -27,9 +27,9 @@ If you find MINNs useful in your research, please consider citing:
 
 ### Requirements: software
 
-1. Requirements for `Keras` and `Theano` (see: [Keras installation instructions](https://keras.io/#installation))
+1. Requirements for `Keras` and `Tensorflow` (see: [Keras installation instructions](https://keras.io/#installation))
 
-  **Note:** The version of Keras is 1.1.0.
+  **Note:** The version of Keras is 2.0.
 
 2. Python packages you might not have: `numpy`, `scipy`, and `sklearn`
 
