@@ -9,7 +9,7 @@ By [Xinggang Wang](http://mclab.eic.hust.edu.cn/~xwang/index.htm), Yongluan Yan,
 
 - It is centered on learning bag representation in the nueral network. And recent deep learning tricks including deep supervision, and residual connections are studied in MINNs.
 - The proposed MINNs achieve state-of-the-art or competitive performance on several MIL benchmarks. Moreover, it is extremely fast for both testing and training, for example, it takes only 0.0003 seconds to predict a bag and a few seconds to train on MIL datasets on a moderate CPU.
-- Our code is written by Python, based on [keras](https://keras.io/), which use [Theano](http://deeplearning.net/software/theano/) as backend.
+- Our code is written by Python, based on [keras](https://keras.io/), which use [Tensorflow](https://www.tensorflow.org/) as backend.
 
 The paper has been accepted by Pattern Recognition, 2017. For more details, please refer to our [paper](http://www.sciencedirect.com/science/article/pii/S0031320317303382).
 
